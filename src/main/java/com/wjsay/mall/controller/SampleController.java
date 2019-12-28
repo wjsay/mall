@@ -2,6 +2,7 @@ package com.wjsay.mall.controller;
 
 import com.wjsay.mall.domain.User;
 import com.wjsay.mall.result.Result;
+import com.wjsay.mall.service.RedisService;
 import com.wjsay.mall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class SampleController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    RedisService redisService;
 
     @RequestMapping("/thymeleaf")
     public String thymeleaf(Model model) {
@@ -33,6 +37,12 @@ public class SampleController {
     @ResponseBody
     public Result<Boolean> dbTx() {
         return Result.success(userService.transaction());
+    }
+
+    @RequestMapping("redis/get")
+    @ResponseBody
+    public Result<User> redisGet() {
+        redisService.get(String, Class<T> clazz);
     }
 
 }
