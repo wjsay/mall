@@ -1,13 +1,13 @@
 package com.wjsay.mall.controller;
 
 import com.wjsay.mall.domain.User;
+import com.wjsay.mall.redis.RedisService;
+import com.wjsay.mall.redis.UserKey;
 import com.wjsay.mall.result.Result;
-import com.wjsay.mall.service.RedisService;
 import com.wjsay.mall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -42,7 +42,18 @@ public class SampleController {
     @RequestMapping("redis/get")
     @ResponseBody
     public Result<User> redisGet() {
-        redisService.get(String, Class<T> clazz);
+        User user = redisService.get(UserKey.ID, "1", User.class);
+        return Result.success(user);
+    }
+
+    @RequestMapping("/redis/set")
+    @ResponseBody
+    public Result<Boolean> redisSet() {
+        User user = new User();
+        user.setId(1);
+        user.setName("Alice");
+        boolean ret = redisService.set(UserKey.ID, "1", user);
+        return Result.success(ret);
     }
 
 }
