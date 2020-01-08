@@ -2,8 +2,12 @@ package com.wjsay.mall.service;
 
 import com.wjsay.mall.dao.MiaoshaUserDao;
 import com.wjsay.mall.domain.MiaoshaUser;
+import com.wjsay.mall.execption.GlobalExecption;
 import com.wjsay.mall.redis.MiaoshaUserKey;
 import com.wjsay.mall.redis.RedisService;
+import com.wjsay.mall.result.CodeMsg;
+import com.wjsay.mall.util.UUIDUtil;
+import com.wjsay.mall.validator.LoginVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,10 @@ public class MiaoshaUserService {
         return miaoshaUserDao.getById(id);
     }
 
+    public MiaoshaUser getByPhoneNo(String no) {
+        return miaoshaUserDao.getByPhoneNo(no);
+    }
+
     public MiaoshaUser getByToken(HttpServletResponse response, String token) {
         if (StringUtils.isEmpty(token)) {
             return null;
@@ -42,5 +50,20 @@ public class MiaoshaUserService {
         cookie.setMaxAge(MiaoshaUserKey.token.expireSeconds());
         cookie.setPath("/");
         response.addCookie(cookie);
+    }
+
+    public boolean login(HttpServletResponse response, LoginVo loginVo) {
+        if (loginVo == null) {
+            throw  new GlobalExecption(CodeMsg.SERVER_ERROR);
+        }
+        String mobile = loginVo.getMobile();
+        String formPassword = loginVo.getPassword();
+        MiaoshaUser user = getByPhoneNo(mobile);
+        if (user == null) {
+            throw new GlobalExecption(CodeMsg.PASSWORD_EMPTY);
+        }
+        String token = UUIDUtil.uuid();
+        addCookie(response, token, user);
+        return true;
     }
 }

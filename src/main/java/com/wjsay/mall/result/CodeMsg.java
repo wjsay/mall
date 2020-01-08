@@ -15,6 +15,8 @@ public class CodeMsg {
     public static final CodeMsg SUCCESS = new CodeMsg(0, "surress");
     public static final CodeMsg SERVER_ERROR = new CodeMsg(500100, "服务器内部错误");
     public static final CodeMsg BIND_ERROR = new CodeMsg(500101, "参数校验异常");
+
+    public static CodeMsg PASSWORD_EMPTY = new CodeMsg(500211, "登录密码不能为空");
     public int getCode() {
         return code;
     }

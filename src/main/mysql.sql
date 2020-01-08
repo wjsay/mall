@@ -1,5 +1,6 @@
-create table miaoshaouser (
+create table miaoshauser (
   id int auto_increment primary key,
+  phoneno varcahr(20),
   nickname varchar(20),
   password varchar(64),
   salt varchar(16),

@@ -1,3 +1,2 @@
 @echo off
-docker stop myredis
-docker rm myredis
+docker rm mall-redis
