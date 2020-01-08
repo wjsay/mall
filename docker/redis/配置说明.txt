@@ -1,0 +1,5 @@
+requirepass foorbared
+bind 0.0.0.0 #不然访问不到docker中的redis
+logfile stdout
+dir ./
+appendonly no

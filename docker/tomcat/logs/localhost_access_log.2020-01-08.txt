@@ -1,0 +1,8 @@
+172.17.0.1 - - [08/Jan/2020:04:09:02 +0000] "GET /mall-1.0-SNAPSHOT/demo/thymeleaf HTTP/1.1" 200 190
+172.17.0.1 - - [08/Jan/2020:04:09:07 +0000] "GET /mall-1.0-SNAPSHOT/demo/redis/get HTTP/1.1" 500 336
+172.17.0.1 - - [08/Jan/2020:04:11:16 +0000] "GET /mall-1.0-SNAPSHOT/demo/redis/get HTTP/1.1" 500 336
+172.17.0.1 - - [08/Jan/2020:04:11:19 +0000] "GET /mall-1.0-SNAPSHOT/demo/redis/set HTTP/1.1" 500 336
+172.17.0.1 - - [08/Jan/2020:05:41:00 +0000] "GET /mall-1.0-SNAPSHOT/demo/redis/get HTTP/1.1" 200 63
+172.17.0.1 - - [08/Jan/2020:05:41:00 +0000] "GET /favicon.ico HTTP/1.1" 404 683
+172.17.0.1 - - [08/Jan/2020:05:41:04 +0000] "GET /mall-1.0-SNAPSHOT/demo/redis/set HTTP/1.1" 200 44
+172.17.0.1 - - [08/Jan/2020:05:41:09 +0000] "GET /mall-1.0-SNAPSHOT/demo/db/get HTTP/1.1" 200 63

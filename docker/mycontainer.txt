@@ -1,0 +1,9 @@
+docker run -it -d --name myubuntu -p 80:80 ubuntu
+docker run -p 6379:6379 -v /d/Documents/docker/redis/data:/data -v /d/Documents/docker/redis/conf/redis.conf:/etc/redis/redis.conf --privileged=true --name mall-redis -d redis redis-server /etc/redis/redis.conf
+docker run -d -p 3306:3306 --privileged=true -v /d/Documents/docker/mysql/conf/my.cnf:/etc/mysql/my.cnf -v /d/Documents/docker/mysql/data:/var/lib/mysql --name mall-mysql mysql
+docker run -p 8080:8080 --privileged=true -v /d/Documents/docker/tomcat/webapps:/usr/local/tomcat/webapps/ -v /d/Documents/docker/tomcat/logs:/usr/local/tomcat/logs/ --name mall-tomcat --link mall-redis:mall_redis --link mall-mysql:mall_db -d tomcat
+
+未使用
+docker run -p 3306:3306  -v /d/Documents/docker/mysql/data:/var/lib/mysql -v /d/Documents/docker/mysql/conf/my.cnf:/etc/mysql/my.cnf --name mall-mysql -e MYSQL_ROOT_PASSWORD=yu0112 -d mysql
+
+配置my.cnf、redis.conf、容器间通信用--link container:hostname

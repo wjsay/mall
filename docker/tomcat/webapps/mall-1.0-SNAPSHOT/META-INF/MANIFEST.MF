@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: mall
+Implementation-Version: 1.0-SNAPSHOT
+Archiver-Version: Plexus Archiver
+Built-By: wjsay
+Implementation-Vendor-Id: com.wjsay
+Created-By: Apache Maven 3.6.1
+Build-Jdk: 1.8.0_231
+Implementation-URL: http://www.example.com
+Implementation-Vendor: Pivotal Software, Inc.
+
