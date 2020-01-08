@@ -1,1 +1,0 @@
-docker exec -it myredis /bin/bash

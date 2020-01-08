@@ -7,3 +7,5 @@ docker run -p 8080:8080 --privileged=true -v /d/Documents/docker/tomcat/webapps:
 docker run -p 3306:3306  -v /d/Documents/docker/mysql/data:/var/lib/mysql -v /d/Documents/docker/mysql/conf/my.cnf:/etc/mysql/my.cnf --name mall-mysql -e MYSQL_ROOT_PASSWORD=yu0112 -d mysql
 
 配置my.cnf、redis.conf、容器间通信用--link container:hostname
+
+docker run -p 8080:8080 --privileged=true -v %cd%/tomcat/webapps:/usr/local/tomcat/webapps/ -v %cd%/tomcat/logs:/usr/local/tomcat/logs/ --name mall-tomcat --link mall-redis:mall_redis --link mall-mysql:mall_db -d tomcat
