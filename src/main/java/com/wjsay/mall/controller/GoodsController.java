@@ -3,11 +3,13 @@ package com.wjsay.mall.controller;
 import com.wjsay.mall.domain.MiaoshaUser;
 import com.wjsay.mall.redis.RedisService;
 import com.wjsay.mall.service.MiaoshaUserService;
+import com.wjsay.mall.validator.GoodsVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -29,5 +31,11 @@ public class GoodsController {
         MiaoshaUser user = userService.getByToken(response, token);
         model.addAttribute("user", user);
         return "goods_list";
+    }
+
+    @RequestMapping("/to_detail/{goodsId}")
+    public String detail(Model model, MiaoshaUser miaoshaUser, @PathVariable("goodsId")long goodsid) {
+        model.addAttribute("user", miaoshaUser);
+        return "";
     }
 }
