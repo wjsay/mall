@@ -3,7 +3,8 @@ package com.wjsay.mall.domain;
 import java.util.Date;
 
 public class MiaoshaUser {
-    private Long id;
+    private Integer id;
+    private Long phoneno;
     private String nickname;
     private String password;
     private String salt;
@@ -11,7 +12,15 @@ public class MiaoshaUser {
     private Date registerDate;
     private Date lastLoginDate;
 
-    public Long getId() {
+    public Long getPhoneno() {
+        return phoneno;
+    }
+
+    public void setPhoneno(Long phoneno) {
+        this.phoneno = phoneno;
+    }
+
+    public Integer getId() {
         return id;
     }
 
@@ -39,7 +48,7 @@ public class MiaoshaUser {
         return lastLoginDate;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
