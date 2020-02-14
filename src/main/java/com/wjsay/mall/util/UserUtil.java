@@ -20,34 +20,35 @@ public class UserUtil {
         for (int i = 0; i < count; ++i) {
             MiaoshaUser user = new MiaoshaUser();
             user.setId(10000 + i);
-            user.setPhoneno(13000000000L + i);
+            user.setPhoneno(13000010000L + i);
             user.setNickname("user" + i);
             user.setRegisterDate(new Date());
             user.setSalt("1a2b3c");
             user.setPassword(MD5Util.inputPassToDBPass("123456", user.getSalt()));
             users.add(user);
         }
-        System.out.printf("create user%n");
+/*        System.out.printf("create user%n");
 
         Connection conn = DBUtil.getConn();
-        String sql = "insert into miaoshauser (nackname, register_date, salt, password, id)  values(?,?,?,?,?)";
+        String sql = "insert into miaoshauser (nickname, registerDate, salt, password, id, phoneno)  values(?,?,?,?,?,?)";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         for (int i = 0; i < users.size(); ++i) {
             MiaoshaUser user = users.get(i);
             pstmt.setString(1, user.getNickname());
-            pstmt.setTimestamp(2, new Timestamp(user.getRegisterDate().getTime()));
+            pstmt.setDate(2, new java.sql.Date(user.getRegisterDate().getTime()));
             pstmt.setString(3, user.getSalt());
             pstmt.setString(4, user.getPassword());
             pstmt.setInt(5, user.getId());
+            pstmt.setLong(6, user.getPhoneno);
             pstmt.addBatch();
         }
         pstmt.executeBatch();
         pstmt.close();
         conn.close();
         System.out.println("insert to db");
-
+*/
         String urlString = "http://localhost:8080/login/do_login";
-        File file= new File("D:/tockns.txt");
+        File file= new File("D:/tokens.txt");
         if (file.exists()) {
             file.delete();
         }
@@ -61,7 +62,7 @@ public class UserUtil {
             co.setRequestMethod("POST");
             co.setDoOutput(true);
             OutputStream out = co.getOutputStream();
-            String params = "mobile=" + user.getPhoneno() + "&password=" + user.getPassword();
+            String params = "mobile=" + user.getPhoneno() + "&password=" + MD5Util.inputPassToFromPass("123456");
             out.write(params.getBytes());
             out.flush();
             InputStream in = co.getInputStream();
@@ -76,15 +77,17 @@ public class UserUtil {
             String response = new String(bout.toByteArray());
             JSONObject jo = JSON.parseObject(response);
             String token = jo.getString("data");
-            System.out.println("create token: "  + user.getPhoneno());
 
             String row = user.getPhoneno() + "," + token;
             raf.seek(raf.length());
             raf.write(row.getBytes());
             raf.write("\r\n".getBytes());
-            System.out.println("write to file: " + user.getId());
         }
         raf.close();
         System.out.println("over");
+    }
+
+    public static void main(String[] args) throws Exception {
+        createUser(1000);
     }
 }

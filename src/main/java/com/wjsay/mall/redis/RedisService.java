@@ -8,6 +8,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,9 @@ public class RedisService {
             String val = jedis.get(mykey);
             T t = stringToBean(val, clazz);
             return t;
+        } catch (Exception e) {
+             e.printStackTrace();
+             return null;
         } finally {
             returnToPool(jedis);
         }
@@ -84,6 +88,9 @@ public class RedisService {
                 jedis.setex(realKey, seconds, str);
             }
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         } finally {
             returnToPool(jedis);
         }
@@ -147,7 +154,7 @@ public class RedisService {
             jedis = jedisPool.getResource();
             jedis.del(keys.toArray(new String[0]));
             return true;
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         } finally {
@@ -173,9 +180,13 @@ public class RedisService {
                     keys.addAll(result);
                 }
                 cursor = ret.getStringCursor();
-            } while (!cursor.equals(0));
+            } while (!cursor.equals("0"));
             return keys;
-        } finally {
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        finally {
             if (jedis != null) {
                 jedis.close();
             }

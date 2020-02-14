@@ -3,6 +3,7 @@ package com.wjsay.mall.controller;
 import com.wjsay.mall.access.AccessLimit;
 import com.wjsay.mall.domain.MiaoshaOrder;
 import com.wjsay.mall.domain.MiaoshaUser;
+import com.wjsay.mall.domain.OrderInfo;
 import com.wjsay.mall.rabbitmq.MQSender;
 import com.wjsay.mall.rabbitmq.MiaoshaMessage;
 import com.wjsay.mall.redis.GoodsKey;
@@ -15,8 +16,6 @@ import com.wjsay.mall.service.MiaoshaService;
 import com.wjsay.mall.service.MiaoshaUserService;
 import com.wjsay.mall.service.OrderService;
 import com.wjsay.mall.validator.GoodsVo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,7 +33,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/miaosha")
 public class MiaoshaController implements InitializingBean {
-    private static Logger log = LoggerFactory.getLogger(MiaoshaController.class);
     @Autowired
     MiaoshaUserService userService;
     @Autowired
@@ -70,9 +68,39 @@ public class MiaoshaController implements InitializingBean {
             redisService.set(GoodsKey.getMiaoshaGoodsStock, "" + goods.getId(), 10);
             localOverMap.put(goods.getId(), false);
         }
+        orderService.deleteOrders();
         redisService.delete(OrderKey.getMiaoshaOrderByUidGid);
         return Result.success(true);
     }
+
+//    @RequestMapping("/do_miaosha")
+//    public String list(Model model,MiaoshaUser user,
+//                       @RequestParam("goodsId")long goodsId) {
+//        model.addAttribute("user", user);
+//        if(user == null) {
+//            return "login";
+//        }
+//        //判断库存
+//        GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
+//        int stock = goods.getStockCount();
+//        if(stock <= 0) {
+//            model.addAttribute("errmsg", CodeMsg.MIAOSHA_OVER.getMsg());
+//            return "miaosha_fail";
+//        }
+//        //判断是否已经秒杀到了
+//        MiaoshaOrder order = orderService.getMiaoOrderByUserIdGoodsId(user.getId(), goodsId);
+//        if(order != null) {
+//            model.addAttribute("errmsg", CodeMsg.REPEAT_MIAOSHA.getMsg());
+//            return "miaosha_fail";
+//        }
+//        //减库存 下订单 写入秒杀订单
+//        OrderInfo orderInfo = miaoshaService.miaosha(user, goods);
+//        if (orderInfo == null) return "miaosha_fail";
+//        model.addAttribute("orderInfo", orderInfo);
+//        if (goods == null) return "miaosha_fail";
+//        model.addAttribute("goods", goods);
+//        return "order_detail";
+//    }
 
     @RequestMapping(value = "/{path}/do_miaosha", method = RequestMethod.POST)
     @ResponseBody
@@ -88,19 +116,18 @@ public class MiaoshaController implements InitializingBean {
             return Result.error(CodeMsg.REQUEST_ILLEGAL);
         }
         Boolean over = localOverMap.get(goodsId);
-        log.info("over: " + over);
-        log.info(localOverMap.toString());
         if (over != null && over) {
             return Result.error(CodeMsg.MIAOSHA_OVER);
-        }
-        long stock = redisService.decr(GoodsKey.getMiaoshaGoodsStock, "" + goodsId);
-        if (stock < 0) {
-            localOverMap.put(goodsId, true);
-            return Result.error(CodeMsg.SELL_OUT);
         }
         MiaoshaOrder order = orderService.getMiaoOrderByUserIdGoodsId(user.getId(), goodsId);
         if (order != null) {
             return Result.error(CodeMsg.REPEAT_MIAOSHA);
+        }
+        // 预减库存
+        long stock = redisService.decr(GoodsKey.getMiaoshaGoodsStock, "" + goodsId);
+        if (stock < 0) {  // 可能两个用户走到这，不怕
+            localOverMap.put(goodsId, true);
+            return Result.error(CodeMsg.SELL_OUT);
         }
         MiaoshaMessage mm = new MiaoshaMessage();
         mm.setUser(user);
@@ -122,6 +149,7 @@ public class MiaoshaController implements InitializingBean {
         return Result.success(result);
     }
 
+    // 隐藏秒杀地址
     @AccessLimit(seconds = 5, maxCount = 5, needLogin = true)
     @RequestMapping(value = "/path", method = RequestMethod.GET)
     @ResponseBody
@@ -131,6 +159,7 @@ public class MiaoshaController implements InitializingBean {
         if (user == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
+
         boolean check = miaoshaService.checkVerifyCode(user, goodsId, verifyCode);
         if (!check) {
             return Result.error(CodeMsg.RESULT_ERROR);

@@ -14,6 +14,7 @@ public interface OrderDao {
     @SelectKey(keyColumn = "id", keyProperty = "id", resultType = long.class, before = false, statement = "select last_insert_id()")
     long insert(OrderInfo orderInfo);
 
+    @SelectKey(keyColumn="id", keyProperty = "id", resultType = long.class, before = false, statement = "select last_insert_id()")
     @Insert("insert into miaosha_order (user_id, goods_id, order_id) values(#{userId}, #{goodsId}, #{orderId})")
     int insertMiaoshaOrder(MiaoshaOrder miaoshaOrder);
 

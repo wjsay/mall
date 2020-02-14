@@ -73,11 +73,11 @@
 </html>
 <script>
 function render(detail){
-	var goods = detail.goods;
-	var order = detail.order;
+	var goods = detail.goodsVo;
+	var order = detail.orderInfo;
 	$("#goodsName").text(goods.goodsName);
 	$("#goodsImg").attr("src", goods.goodsImg);
-	$("#orderPrice").text(order.goodsPrice);
+	$("#orderPrice").text(goods.miaoshaPrice);
 	$("#createDate").text(new Date(order.createDate).format("yyyy-MM-dd hh:mm:ss"));
 	var status = "";
 	if(order.status == 0){

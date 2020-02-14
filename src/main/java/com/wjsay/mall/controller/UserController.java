@@ -19,6 +19,7 @@ public class UserController {
     @Autowired
     RedisService redisService;
 
+    // 589 tps
     @RequestMapping("/info")
     @ResponseBody
     public Result<MiaoshaUser> info(Model model, MiaoshaUser user) {

@@ -1,6 +1,7 @@
 package com.wjsay.mall.controller;
 
 import com.wjsay.mall.domain.MiaoshaUser;
+import com.wjsay.mall.redis.GoodsKey;
 import com.wjsay.mall.redis.RedisService;
 import com.wjsay.mall.result.Result;
 import com.wjsay.mall.service.GoodsService;
@@ -9,9 +10,12 @@ import com.wjsay.mall.validator.GoodsDetailVo;
 import com.wjsay.mall.validator.GoodsVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.spring4.context.SpringWebContext;
+import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,13 +31,29 @@ public class GoodsController {
     RedisService redisService;
     @Autowired
     GoodsService goodsService;
+    @Autowired
+    ThymeleafViewResolver thymeleafViewResolver;
+    @Autowired
+    ApplicationContext applicationContext;
 
+    // 194 TPS。用了redis反而慢了
     @RequestMapping("/to_list")
-    public String list(Model model, MiaoshaUser user) {
+    @ResponseBody
+    public String list(HttpServletRequest request, HttpServletResponse response, Model model, MiaoshaUser user) {
         model.addAttribute("user", user);
+//        String html = redisService.get(GoodsKey.getGoodsList, "", String.class);
+//        if (!StringUtils.isEmpty(html)) {
+//            return html;
+//        }
         List<GoodsVo> goodsVoList = goodsService.listGoodsVo();
         model.addAttribute("goodsList", goodsVoList);
-        return "goods_list";
+        SpringWebContext context = new SpringWebContext(request,response,request.getServletContext(),request.getLocale(),
+                model.asMap(), applicationContext);
+        String html = thymeleafViewResolver.getTemplateEngine().process("goods_list", context);
+        if (!StringUtils.isEmpty(html)) {
+            redisService.set(GoodsKey.getGoodsList, "", html); // 页面换存
+        }
+        return html;
     }
 
 //    @RequestMapping("/to_detail/{goodsId}")
