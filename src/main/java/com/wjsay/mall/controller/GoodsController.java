@@ -125,7 +125,7 @@ public class GoodsController {
     public Result<String> addMiaoshaGoods(HttpServletRequest request,
                 @RequestParam(value = "image") MultipartFile imageFile, GoodsVo goodsVo) { // 去掉@ResponseBody
         try {
-            if (imageFile == null) {
+            if (imageFile == null || goodsVo == null) {
                 return Result.error(CodeMsg.REQUEST_ILLEGAL);
             }
             String prefix =  ResourceUtils.getURL("classpath:").getPath()+"static";
@@ -139,10 +139,6 @@ public class GoodsController {
             String name = System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
             File file = new File(dir, name);
             imageFile.transferTo(file);
-            if (goodsVo == null) {
-                file.delete();
-                return Result.error(CodeMsg.REQUEST_ILLEGAL);
-            }
             goodsVo.setGoodsImg(mid + name);
             goodsService.addMiaoshaGoods(goodsVo);
             return Result.success(CodeMsg.SUCCESS.getMsg());
