@@ -10,12 +10,15 @@ import com.wjsay.mall.result.Result;
 import com.wjsay.mall.util.MD5Util;
 import com.wjsay.mall.util.UUIDUtil;
 import com.wjsay.mall.validator.LoginVo;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.Random;
 
 @Service
 public class MiaoshaUserService {
@@ -73,5 +76,31 @@ public class MiaoshaUserService {
         String token = UUIDUtil.uuid();
         addCookie(response, token, user);
         return token;
+    }
+
+    public int addUser(LoginVo loginVo) {
+        try {
+            MiaoshaUser user = miaoshaUserDao.getByPhoneNo(loginVo.getMobile());
+            if (user != null) {
+                return -1; // 用户已存在
+            }
+            user = new MiaoshaUser();
+            user.setPhoneno(Long.parseLong(loginVo.getMobile()));
+            final String dict = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            StringBuilder buff = new StringBuilder();
+            Random random = new Random();
+            for (int i = 0; i < 6; ++i) {
+                buff.append(dict.charAt(random.nextInt(dict.length())));
+            }
+            user.setSalt(buff.toString());
+            user.setPassword(MD5Util.formPassToDBPass(loginVo.getPassword(), user.getSalt()));
+            user.setRegisterDate(new Date());
+            user.setNickname("mall" + user.getPhoneno());
+            miaoshaUserDao.addUser(user);
+            return 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -2; // 数据库操作异常
+        }
     }
 }

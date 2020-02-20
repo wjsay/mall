@@ -34,7 +34,10 @@
 <body>
 
 <div class="panel panel-default" style="height:100%;background-color:rgba(222,222,222,0.8)">
-  <div class="panel-heading">秒杀商品列表</div>
+  <div class="panel-heading">秒杀商品列表
+      <button class="alert-danger" onclick="myreset()">重新测试秒杀</button>
+      <button class="alert-success" onclick="addMiaoshaGoods()">添加秒杀商品</button>
+  </div>
   <table class="table" id="goodslist">
   	<tr><td>商品名称</td><td>商品图片</td><td>商品原价</td><td>秒杀价</td><td>库存数量</td><td>详情</td></tr>
   	<tr  th:each="goods,goodsStat : ${goodsList}">
@@ -48,4 +51,27 @@
   </table>
 </div>
 </body>
+<script>
+    function myreset() {
+        $.ajax({
+            url: "/miaosha/reset",
+            type: "POST",
+            success: function (data) {
+                if (data.code === 0) {
+                    layer.msg("重置成功");
+                    location.reload();
+                } else {
+                    layer.msg("重置出错");
+                }
+            },
+            error: function (data) {
+                layer.msg(data.msg)
+            }
+        });
+    }
+
+    function addMiaoshaGoods() {
+        window.location.href="/addMiaoshaGoods.htm"
+    }
+</script>
 </html>

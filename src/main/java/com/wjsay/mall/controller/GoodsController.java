@@ -1,30 +1,38 @@
 package com.wjsay.mall.controller;
 
+import com.wjsay.mall.domain.MiaoshaGoods;
 import com.wjsay.mall.domain.MiaoshaUser;
 import com.wjsay.mall.redis.GoodsKey;
 import com.wjsay.mall.redis.RedisService;
+import com.wjsay.mall.result.CodeMsg;
 import com.wjsay.mall.result.Result;
 import com.wjsay.mall.service.GoodsService;
 import com.wjsay.mall.service.MiaoshaUserService;
 import com.wjsay.mall.validator.GoodsDetailVo;
 import com.wjsay.mall.validator.GoodsVo;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.spring4.context.SpringWebContext;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.PathParam;
+import java.io.File;
 import java.util.List;
 
 @Controller
 @RequestMapping("/goods")
 public class GoodsController {
+    private static final Logger logger = LoggerFactory.getLogger(GoodsController.class);
     @Autowired
     MiaoshaUserService userService;
     @Autowired
@@ -110,5 +118,37 @@ public class GoodsController {
         vo.setRemainSeconds(remainSeconds);
         vo.setUser(user);
         return Result.success(vo);
+    }
+
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<String> addMiaoshaGoods(HttpServletRequest request,
+                @RequestParam(value = "image") MultipartFile imageFile, GoodsVo goodsVo) { // 去掉@ResponseBody
+        try {
+            if (imageFile == null) {
+                return Result.error(CodeMsg.REQUEST_ILLEGAL);
+            }
+            String prefix =  ResourceUtils.getURL("classpath:").getPath()+"static";
+            logger.info(prefix);
+            String mid = "/upload/images/";
+            prefix += mid;
+            File dir = new File(prefix);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            String name = System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
+            File file = new File(dir, name);
+            imageFile.transferTo(file);
+            if (goodsVo == null) {
+                file.delete();
+                return Result.error(CodeMsg.REQUEST_ILLEGAL);
+            }
+            goodsVo.setGoodsImg(mid + name);
+            goodsService.addMiaoshaGoods(goodsVo);
+            return Result.success(CodeMsg.SUCCESS.getMsg());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error(CodeMsg.SERVER_ERROR);
+        }
     }
 }

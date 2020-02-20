@@ -2,6 +2,9 @@ package com.wjsay.mall.validator;
 
 import com.wjsay.mall.domain.Goods;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class GoodsVo extends Goods {
@@ -18,12 +21,20 @@ public class GoodsVo extends Goods {
         this.stockCount = stockCount;
     }
 
+    public void setStartDate(String startDate) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        this.startDate = format.parse(startDate);
+    }
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
-
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public void setEndDate(String endDate) throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        this.endDate = format.parse(endDate);
     }
 
     public Double getMiaoshaPrice() {

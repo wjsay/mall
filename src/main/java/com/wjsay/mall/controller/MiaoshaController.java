@@ -3,7 +3,6 @@ package com.wjsay.mall.controller;
 import com.wjsay.mall.access.AccessLimit;
 import com.wjsay.mall.domain.MiaoshaOrder;
 import com.wjsay.mall.domain.MiaoshaUser;
-import com.wjsay.mall.domain.OrderInfo;
 import com.wjsay.mall.rabbitmq.MQSender;
 import com.wjsay.mall.rabbitmq.MiaoshaMessage;
 import com.wjsay.mall.redis.GoodsKey;
@@ -27,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -59,18 +60,27 @@ public class MiaoshaController implements InitializingBean {
         }
     }
 
-    @RequestMapping(value = "/reset", method = RequestMethod.GET)
+    @RequestMapping(value = "/reset", method = RequestMethod.POST)
     @ResponseBody
     public Result<Boolean> reset(Model model) {
-        List<GoodsVo> goodsList = goodsService.listGoodsVo();
-        for (GoodsVo goods: goodsList) {
-            goods.setStockCount(10);
-            redisService.set(GoodsKey.getMiaoshaGoodsStock, "" + goods.getId(), 10);
-            localOverMap.put(goods.getId(), false);
+        try {
+            List<GoodsVo> goodsList = goodsService.listGoodsVo();
+            for (GoodsVo goods : goodsList) {
+                goods.setStockCount(10);
+                redisService.set(GoodsKey.getMiaoshaGoodsStock, "" + goods.getId(), 10);
+                localOverMap.put(goods.getId(), false);
+            }
+            orderService.deleteOrders();
+            redisService.delete(OrderKey.getMiaoshaOrderByUidGid);
+            int count = 50;
+            Date start = new Date(System.currentTimeMillis() + 15 * 1000);
+            Date end = new Date(start.getTime() + 60 * 4 * 1000);
+            goodsService.updateMiaoshaGoods(count, start, end);
+            return Result.success(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error(CodeMsg.SERVER_ERROR);
         }
-        orderService.deleteOrders();
-        redisService.delete(OrderKey.getMiaoshaOrderByUidGid);
-        return Result.success(true);
     }
 
 //    @RequestMapping("/do_miaosha")
