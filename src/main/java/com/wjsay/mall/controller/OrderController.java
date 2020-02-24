@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
+
 @RequestMapping("/order")
 @Controller
 public class OrderController {
@@ -46,5 +48,11 @@ public class OrderController {
         vo.setOrderInfo(order);
         vo.setGoodsVo(goods);
         return Result.success(vo);
+    }
+    @RequestMapping("/my")
+    public String queryOrder(Model model, MiaoshaUser user) {
+        List<OrderInfo> orderList = orderService.getOrderInfoByUserId(user.getId());
+        model.addAttribute("orderList", orderList);
+        return "myorders";
     }
 }

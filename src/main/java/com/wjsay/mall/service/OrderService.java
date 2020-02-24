@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -67,5 +68,9 @@ public class OrderService {
     public void deleteOrders() {
         orderDao.deleteOrders();
         orderDao.deleteMiaoshaOrders();
+    }
+
+    public List<OrderInfo> getOrderInfoByUserId(int userId) {
+        return orderDao.getOrderByUserId(userId);
     }
 }

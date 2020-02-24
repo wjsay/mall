@@ -147,4 +147,5 @@ public class GoodsController {
             return Result.error(CodeMsg.SERVER_ERROR);
         }
     }
+
 }

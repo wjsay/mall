@@ -29,4 +29,5 @@ public interface GoodsDao {
     @Insert("insert into miaosha_goods (goods_id, miaosha_price, stock_count, start_date, end_date) " +
             "values(#{id}, #{miaoshaPrice}, #{stockCount}, #{startDate}, #{endDate})")
     void addMiaoshaGoods(GoodsVo goods);
+
 }

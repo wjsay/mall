@@ -4,6 +4,8 @@ import com.wjsay.mall.domain.MiaoshaOrder;
 import com.wjsay.mall.domain.OrderInfo;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface OrderDao {
     @Select("select * from miaosha_order where user_id= #{userId} and goods_id = #{goodsId}")
@@ -26,4 +28,7 @@ public interface OrderDao {
 
     @Delete("delete from miaosha_order")
     void deleteMiaoshaOrders();
+
+    @Select("select * from order_info where user_id = #{userId}")
+    List<OrderInfo> getOrderByUserId(@Param("userId")int userId);
 }
