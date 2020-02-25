@@ -160,7 +160,7 @@ public class MiaoshaController implements InitializingBean {
             return Result.error(CodeMsg.SESSION_ERROR);
         }
         long result = miaoshaService.getMiaoshaResult(user.getId(), goodsId);
-        return Result.success(result);
+        return Result.success(result);  // result = -1排队中 0
     }
 
     // 隐藏秒杀地址
