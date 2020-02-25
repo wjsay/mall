@@ -14,10 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.spring4.context.SpringWebContext;
@@ -25,8 +25,8 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.server.PathParam;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 @Controller
@@ -43,6 +43,8 @@ public class GoodsController {
     ThymeleafViewResolver thymeleafViewResolver;
     @Autowired
     ApplicationContext applicationContext;
+    @Value("${spring.http.multipart.location}")
+    private String location;
 
     // 194 TPS。用了redis反而慢了
     @RequestMapping("/to_list")
@@ -128,19 +130,20 @@ public class GoodsController {
             if (imageFile == null || goodsVo == null) {
                 return Result.error(CodeMsg.REQUEST_ILLEGAL);
             }
-            String prefix =  ResourceUtils.getURL("classpath:").getPath()+"static";
-            logger.info(prefix);
-            String mid = "/upload/images/";
-            prefix += mid;
-            File dir = new File(prefix);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            //String prefix =  ResourceUtils.getURL("classpath:").getPath()+"static";
+            //logger.debug(prefix);
+            // 如果是/images/name.jpg。执行transferTo时，linux会在根目录创建文件，而windows会在spring.http.multipart.location下创建文件
+            String name = "images/" + System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
+            File path = new File(location + "images/");
+            if (!path.exists()) {
+                path.mkdirs();
             }
-            String name = System.currentTimeMillis() + "-" + imageFile.getOriginalFilename();
-            File file = new File(dir, name);
-            imageFile.transferTo(file);
-            goodsVo.setGoodsImg(mid + name);
+            File file = new File(name);
+            imageFile.transferTo(file);  // 文件上传问题
+            goodsVo.setGoodsImg("/" + name);
             goodsService.addMiaoshaGoods(goodsVo);
+            redisService.set(GoodsKey.getMiaoshaGoodsStock, "" + goodsVo.getId(), goodsVo.getStockCount());
+            MiaoshaController.updateCache(goodsVo); // 增加了耦合度，updateCache应该放在miaoshaService中
             return Result.success(CodeMsg.SUCCESS.getMsg());
         } catch (Exception e) {
             e.printStackTrace();

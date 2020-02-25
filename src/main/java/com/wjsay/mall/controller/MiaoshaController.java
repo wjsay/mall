@@ -47,7 +47,7 @@ public class MiaoshaController implements InitializingBean {
     @Autowired
     MQSender sender;
 
-    private HashMap<Long, Boolean> localOverMap = new HashMap<>();
+    private static HashMap<Long, Boolean> localOverMap = new HashMap<>();
 
     public void afterPropertiesSet() throws Exception {
         List<GoodsVo> goodsVoList = goodsService.listGoodsVo();
@@ -58,6 +58,10 @@ public class MiaoshaController implements InitializingBean {
             redisService.set(GoodsKey.getMiaoshaGoodsStock, "" + goods.getId(), goods.getStockCount());
             localOverMap.put(goods.getId(), false);
         }
+    }
+
+    public static void updateCache(GoodsVo goods) {  // 只要访问网络，就可能异常
+        localOverMap.put(goods.getId(), false);
     }
 
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
