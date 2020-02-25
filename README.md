@@ -18,13 +18,13 @@
 
 4商品列表
 
-![img04](.images/img04.png)
+![img04](.images/img06.png)
 
 5订单详情
 
-![img05](.images/img05.png)
+![img05](.images/img04.png)
 
 6秒杀界面
 
-![img06](.images/img06.png)
+![img06](.images/img05.png)
 
