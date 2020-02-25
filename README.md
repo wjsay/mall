@@ -6,25 +6,25 @@
 
 1 注册
 
-![img01](images\img01.png)
+![img01](.images/img01.png)
 
 2登入
 
-![img02](images\img02.png)
+![img02](.images/img02.png)
 
 3添加商品
 
-![img03](images\img03.png)
+![img03](.images/img03.png)
 
 4商品列表
 
-![img04](images\img04.png)
+![img04](.images/img04.png)
 
 5订单详情
 
-![img05](images\img05.png)
+![img05](.images/img05.png)
 
-5秒杀界面
+6秒杀界面
 
-![img06](images\img06.png)
+![img06](.images/img06.png)
 
