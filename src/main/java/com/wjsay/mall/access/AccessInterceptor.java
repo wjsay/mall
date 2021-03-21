@@ -2,12 +2,10 @@ package com.wjsay.mall.access;
 
 import com.alibaba.fastjson.JSON;
 import com.wjsay.mall.domain.MiaoshaUser;
-import com.wjsay.mall.domain.User;
 import com.wjsay.mall.redis.AccessKey;
 import com.wjsay.mall.redis.RedisService;
 import com.wjsay.mall.result.CodeMsg;
 import com.wjsay.mall.result.Result;
-import com.wjsay.mall.service.MiaoshaService;
 import com.wjsay.mall.service.MiaoshaUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

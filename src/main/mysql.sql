@@ -2,10 +2,6 @@ create database db_mall;
 create user mall;
 grant all privileges on db_mall.* to mall@'%';
 set password for mall=password('mall');
-create table user (
-  id int primary key auto_increment,
-  name varchar(30)
-);
 create table miaoshauser (
   id int auto_increment primary key,
   phoneno varchar(20),
